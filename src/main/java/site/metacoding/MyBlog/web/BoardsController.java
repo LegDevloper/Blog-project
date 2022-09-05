@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.RequiredArgsConstructor;
 import site.metacoding.MyBlog.domain.boards.BoardsDao;
-import site.metacoding.MyBlog.domain.boards.mapper.MainView;
 import site.metacoding.MyBlog.domain.users.Users;
 import site.metacoding.MyBlog.web.dto.request.boards.WriteDto;
+import site.metacoding.MyBlog.web.dto.response.boards.DetailDto;
+import site.metacoding.MyBlog.web.dto.response.boards.MainDto;
 
 @RequiredArgsConstructor
 @Controller
@@ -44,13 +45,15 @@ public class BoardsController {
 	
 	@GetMapping({"/", "/boards"})
 	public String getBoardList(Model model) {
-		List<MainView> boardsList = boardsDao.findAll();
+		List<MainDto> boardsList = boardsDao.findAll();
 		model.addAttribute("boardsList",boardsList);
 		return "boards/main";
 	}
 	
 	@GetMapping("/boards/{id}")
-	public String getBoardList(@PathVariable Integer id) {
+	public String getBoardList(Model model,@PathVariable Integer id) {
+		DetailDto detailDto = boardsDao.findById(id);
+		model.addAttribute("boardsDetail",detailDto);
 		return "boards/detail";
 	}
 	

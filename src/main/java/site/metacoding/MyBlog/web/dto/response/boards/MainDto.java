@@ -1,11 +1,11 @@
-package site.metacoding.MyBlog.domain.boards.mapper;
+package site.metacoding.MyBlog.web.dto.response.boards;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MainView {
+public class MainDto {
 	private Integer id;
 	private String title;
 	private String username;
