@@ -5,12 +5,15 @@
 
 <div class="container">
 	<br /> <br />
+
 	<div>
 		<h3>${boardsDetail.title}</h3>
 	</div>
 	<hr/>
 
 	<div>${boardsDetail.content}</div>
+	<br/>
+	</hr>
 
 
 </div>

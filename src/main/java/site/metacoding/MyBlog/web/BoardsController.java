@@ -43,15 +43,19 @@ public class BoardsController {
 		return "redirect:/";
 	}
 	
-	@GetMapping({"/", "/boards"})
-	public String getBoardList(Model model) {
-		List<MainDto> boardsList = boardsDao.findAll();
+	@GetMapping({"/", "/boards"}) //page는 QueryString으로 받자(PK값이 아니기때문에)
+	public String getBoardList(Model model, Integer page) {
+		if(page==null)page=0;
+
+		int startNum = page*10;
+		List<MainDto> boardsList = boardsDao.findAll(startNum);
 		model.addAttribute("boardsList",boardsList);
 		return "boards/main";
 	}
 	
+	
 	@GetMapping("/boards/{id}")
-	public String getBoardList(Model model,@PathVariable Integer id) {
+	public String getBoardList(@PathVariable Integer id,Model model) {
 		DetailDto detailDto = boardsDao.findById(id);
 		model.addAttribute("boardsDetail",detailDto);
 		return "boards/detail";
