@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.RequiredArgsConstructor;
+import site.metacoding.MyBlog.domain.boards.Boards;
 import site.metacoding.MyBlog.domain.boards.BoardsDao;
 import site.metacoding.MyBlog.domain.users.Users;
 import site.metacoding.MyBlog.web.dto.request.boards.WriteDto;
@@ -46,8 +47,15 @@ public class BoardsController {
 	@GetMapping({"/", "/boards"}) //page는 QueryString으로 받자(PK값이 아니기때문에)
 	public String getBoardList(Model model, Integer page) {
 		if(page==null)page=0;
+		int totalPage=0;
+		int totalCount=boardsDao.count();
 
+		if(totalCount%10==0) totalPage=(totalCount/10);
+		else if(totalCount%10!=0) totalPage=(totalCount/10)+1;
+
+		model.addAttribute("totalpage",totalPage);
 		int startNum = page*10;
+		
 		List<MainDto> boardsList = boardsDao.findAll(startNum);
 		model.addAttribute("boardsList",boardsList);
 		return "boards/main";
