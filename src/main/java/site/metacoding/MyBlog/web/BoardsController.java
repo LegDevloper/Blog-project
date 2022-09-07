@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.RequiredArgsConstructor;
+import site.metacoding.MyBlog.domain.boards.Boards;
 import site.metacoding.MyBlog.domain.boards.BoardsDao;
 import site.metacoding.MyBlog.domain.users.Users;
-
 import site.metacoding.MyBlog.web.dto.request.boards.WriteDto;
-import site.metacoding.MyBlog.web.dto.response.boards.DetailDto;
+
 import site.metacoding.MyBlog.web.dto.response.boards.MainDto;
 import site.metacoding.MyBlog.web.dto.response.boards.PagingDto;
 
@@ -24,8 +24,31 @@ import site.metacoding.MyBlog.web.dto.response.boards.PagingDto;
 public class BoardsController {
 	private final BoardsDao boardsDao;
 	private final HttpSession session;
-	// @PostMapping("/boards/{id}/delete")
-	// @PostMapping("/boards/{id}/update")
+
+	
+	@PostMapping("/boards/{id}/delete")
+	public String deleteBoards(@PathVariable Integer id) {
+		//트랜잭션때문에 먼저 select를 한다(READ)
+		Users principal = (Users)session.getAttribute("principal");
+		Boards boardsPS = boardsDao.findById(id);
+		//비정상요청체크
+		if(boardsPS==null) {//If는 비정상 로직을 타게 해서 걸러내는 필터 역할을 하는게 좋다.
+			return "redirect:/boards/"+id;
+		}
+		//인증체크
+		if(principal == null) {
+			return "redirect:/loginForm";
+		}
+		//권한체크
+		if(principal.getId()!=boardsPS.getUsersId()) {
+			return "redirect:/boards/"+id;
+		}
+		
+		boardsDao.delete(id);
+		
+		return "redirect:/";
+	}
+	
 	
 	@PostMapping("/boards")
 	public String writeBoards(WriteDto writeDto) {
@@ -79,9 +102,8 @@ public class BoardsController {
 	
 	
 	@GetMapping("/boards/{id}")
-	public String getBoardList(@PathVariable Integer id,Model model) {
-		DetailDto detailDto = boardsDao.findById(id);
-		model.addAttribute("boardsDetail",detailDto);
+	public String getBoardDetail(@PathVariable Integer id,Model model) {
+		model.addAttribute("boards", boardsDao.findById(id));
 		return "boards/detail";
 	}
 	

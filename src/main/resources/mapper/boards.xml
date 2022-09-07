@@ -9,10 +9,11 @@
 		VALUES(boards_seq.nextval, #{title},#{content},#{usersId},sysdate)
 	</insert>
 
-	<select id="findById" resultType="site.metacoding.MyBlog.web.dto.response.boards.DetailDto">
-		SELECT title,content FROM boards WHERE id=#{id}
+	<select id="findById"
+		resultType="site.metacoding.MyBlog.domain.boards.Boards">
+		SELECT id, title, content, usersId, createdAt FROM boards WHERE id=#{id}
 	</select>
-	
+
 	<select id="findAll" resultType="site.metacoding.MyBlog.web.dto.response.boards.MainDto">
 		SELECT b.id,b.title,u.username
 		FROM boards b 
@@ -43,7 +44,7 @@
 	</update>
 	
 	<delete id="delete">
-	
+		DELETE FROM boards WHERE id=#{id}
 	</delete>
 
 </mapper>
