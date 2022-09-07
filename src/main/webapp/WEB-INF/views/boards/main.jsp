@@ -21,30 +21,16 @@
 			</c:forEach>
 		</tbody>
 	</table>
-	<h2>${param.page}</h2>
-	
-	<ul class="pagination"">
-		<c:choose>
-			<c:when test="${param.page>=1}">
-				<li class="page-item "><a class="page-link" href="/?page=${param.page-1}">Previous</a></li>
-			</c:when>
-			<c:otherwise>
-				<li class="page-item disabled"><a class="page-link">Previous</a></li>
-			</c:otherwise>
-		</c:choose>
-		<c:choose>
-			<c:when test="${param.page==totalpage-1}">
-				<li class="page-item disabled"><a class="page-link">Next</a></li>
-			</c:when>
-			<c:otherwise>
-				<li class="page-item"><a class="page-link" href="/?page=${param.page+1}">Next</a></li>
-			</c:otherwise>
-		</c:choose>
-
-
-	</ul>
-
-
+	<div class="d-flex justify-content-center">
+		<ul class="pagination">
+			<li class="page-item ${paging.first?'disabled':''}"><a class="page-link" href="?page=${paging.currentPage-1}">Previous</a></li>
+			<c:forEach var="page" begin="${paging.startPageNum}" end="${paging.lastPageNum}">
+				<li class="page-item ${paging.currentPage==(page-1)?'active':''}"><a class="page-link" href="/?page=${page-1}">${page}</a></li>
+			</c:forEach>
+			<li class="page-item ${paging.last?'disabled':''}"><a class="page-link" href="?page=${paging.currentPage+1 }">Next</a></li>
+		</ul>
+	</div>
 </div>
+
 
 <%@ include file="../layout/footer.jsp"%>
