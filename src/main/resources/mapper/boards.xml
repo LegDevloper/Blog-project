@@ -20,7 +20,7 @@
 		INNER JOIN users u
 		ON b.usersId=u.id
 		ORDER BY b.id DESC
-		OFFSET #{startNum} ROWS FETCH NEXT 3 ROWS ONLY
+		OFFSET #{startNum} ROWS FETCH NEXT 5 ROWS ONLY
 	</select>
 	
 	<select id="paging" resultType="site.metacoding.MyBlog.web.dto.response.boards.PagingDto">
@@ -40,7 +40,7 @@
 	</select>
 	
 	<update id="update">
-	
+		UPDATE boards SET title=#{title}, content=#{content} WHERE id=#{id}
 	</update>
 	
 	<delete id="delete">

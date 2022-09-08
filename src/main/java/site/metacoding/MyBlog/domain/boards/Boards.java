@@ -2,10 +2,10 @@ package site.metacoding.MyBlog.domain.boards;
 
 import java.sql.Timestamp;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import site.metacoding.MyBlog.web.dto.request.boards.UpdateDto;
 
 @NoArgsConstructor
 @Getter
@@ -23,6 +23,12 @@ public class Boards {
 		this.content = content;
 		this.usersId = usersId;
 	}
+	public void updateBoards(UpdateDto updateDto) {
+		this.title=updateDto.getTitle();
+		this.content=updateDto.getContent();
+	}
+	
+
 	
 	
 }

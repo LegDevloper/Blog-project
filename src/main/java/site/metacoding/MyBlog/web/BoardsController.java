@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import site.metacoding.MyBlog.domain.boards.Boards;
 import site.metacoding.MyBlog.domain.boards.BoardsDao;
 import site.metacoding.MyBlog.domain.users.Users;
+import site.metacoding.MyBlog.web.dto.request.boards.UpdateDto;
 import site.metacoding.MyBlog.web.dto.request.boards.WriteDto;
-
 import site.metacoding.MyBlog.web.dto.response.boards.MainDto;
 import site.metacoding.MyBlog.web.dto.response.boards.PagingDto;
 
@@ -25,31 +25,74 @@ public class BoardsController {
 	private final BoardsDao boardsDao;
 	private final HttpSession session;
 
-	
-	@PostMapping("/boards/{id}/delete")
-	public String deleteBoards(@PathVariable Integer id) {
-		//트랜잭션때문에 먼저 select를 한다(READ)
-		Users principal = (Users)session.getAttribute("principal");
+	@PostMapping("boards/{id}/update")
+	public String update(@PathVariable Integer id, UpdateDto updateDto) {
+		//1.영속화
 		Boards boardsPS = boardsDao.findById(id);
-		//비정상요청체크
-		if(boardsPS==null) {//If는 비정상 로직을 타게 해서 걸러내는 필터 역할을 하는게 좋다.
-			return "redirect:/boards/"+id;
+		Users principal = (Users) session.getAttribute("principal");
+		
+		
+		if (boardsPS == null) {
+			return "errors/badPage";
 		}
-		//인증체크
-		if(principal == null) {
+		// 인증체크
+		if (principal == null) {
 			return "redirect:/loginForm";
 		}
-		//권한체크
-		if(principal.getId()!=boardsPS.getUsersId()) {
-			return "redirect:/boards/"+id;
+		// 권한체크
+		if (principal.getId() != boardsPS.getUsersId()) {
+			return "errors/badPage";
 		}
-		
-		boardsDao.delete(id);
-		
+		//2.변경
+		boardsPS.updateBoards(updateDto);
+		//수행
+		boardsDao.update(boardsPS);
+		return "redirect:/boards/"+id;
+	}
+	@GetMapping("/boards/{id}/updateForm")
+	public String updateForm(@PathVariable Integer id, Model model) {
+		Boards boardsPS = boardsDao.findById(id);
+		Users principal = (Users) session.getAttribute("principal");
+
+		// 비정상요청체크
+		if (boardsPS == null) {
+			return "errors/badPage";
+		}
+		// 인증체크
+		if (principal == null) {
+			return "redirect:/loginForm";
+		}
+		// 권한체크
+		if (principal.getId() != boardsPS.getUsersId()) {
+			return "errors/badPage";
+		}
+		model.addAttribute("boards",boardsPS);
+		return "boards/updateForm";
+	}
+
+	@PostMapping("/boards/{id}/delete")
+	public String deleteBoards(@PathVariable Integer id) {
+		// 트랜잭션때문에 먼저 select를 한다(READ)
+		Users principal = (Users) session.getAttribute("principal");
+		Boards boardsPS = boardsDao.findById(id);
+		// 비정상요청체크
+		if (boardsPS == null) {// If는 비정상 로직을 타게 해서 걸러내는 필터 역할을 하는게 좋다.
+			return "redirect:/loginForm";
+		}
+		// 인증체크
+		if (principal == null) {
+			return "redirect:/loginForm";
+		}
+		// 권한체크
+		if (principal.getId() != boardsPS.getUsersId()) {
+			return "errors/badPage";
+		}
+
+		boardsDao.delete(id); // 핵심로직
+
 		return "redirect:/";
 	}
-	
-	
+
 	@PostMapping("/boards")
 	public String writeBoards(WriteDto writeDto) {
 		// 세션에 접근해서 세션값을 확인한다. 그떄 users로 다운캐스팅하고 키값은 principal로 한다.
@@ -57,26 +100,26 @@ public class BoardsController {
 		// BoardsDao에 접근해서 insert 메서드를 호출한다.
 		// dto를 entity로 변환해서 인수로 넣는다
 		// entity에는 셋녀의 principal에 getid가 필요하다.
-		Users principal = (Users)session.getAttribute("principal");
+		Users principal = (Users) session.getAttribute("principal");
 		Integer usersId = principal.getId();
-		
-		if(principal==null) {
+
+		if (principal == null) {
 			return "redirect:/loginForm";
 		}
-		
+
 		boardsDao.insert(writeDto.toEntity(usersId));
 		return "redirect:/";
 	}
-	
-	@GetMapping({"/", "/boards"}) //page는 QueryString으로 받자(PK값이 아니기때문에)
+
+	@GetMapping({ "/", "/boards" }) // page는 QueryString으로 받자(PK값이 아니기때문에)
 	public String getBoardList(Model model, Integer page) {
-		if(page==null)page=0;
-		int startNum = (page)*3;
+		if (page == null)
+			page = 0;
+		int startNum = (page) * 5;
 		List<MainDto> boardsList = boardsDao.findAll(startNum);
-		
-		
+
 		PagingDto paging = boardsDao.paging(page);
-		
+
 		final int blockCount = 5;
 
 		int currentBlock = page / blockCount;
@@ -91,26 +134,23 @@ public class BoardsController {
 		paging.setCurrentBlock(currentBlock);
 		paging.setStartPageNum(startPageNum);
 		paging.setLastPageNum(lastPageNum);
-		model.addAttribute("boardsList",boardsList);
-		
-		model.addAttribute("paging",paging);
-		
-	
-	
+		model.addAttribute("boardsList", boardsList);
+
+		model.addAttribute("paging", paging);
+
 		return "boards/main";
 	}
-	
-	
+
 	@GetMapping("/boards/{id}")
-	public String getBoardDetail(@PathVariable Integer id,Model model) {
+	public String getBoardDetail(@PathVariable Integer id, Model model) {
 		model.addAttribute("boards", boardsDao.findById(id));
 		return "boards/detail";
 	}
-	
+
 	@GetMapping("/boards/writeForm")
 	public String writeForm() {
-		Users principal = (Users)session.getAttribute("principal");//들어갈때 object지만 꺼낼때는 다운캐스팅ㄱ
-		if(principal == null) {
+		Users principal = (Users) session.getAttribute("principal");// 들어갈때 object지만 꺼낼때는 다운캐스팅ㄱ
+		if (principal == null) {
 			return "redirect:/loginForm";
 		}
 		return "boards/writeForm";
