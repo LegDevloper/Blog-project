@@ -27,11 +27,10 @@ public class BoardsController {
 
 	@PostMapping("boards/{id}/update")
 	public String update(@PathVariable Integer id, UpdateDto updateDto) {
-		//1.영속화
+		// 1.영속화
 		Boards boardsPS = boardsDao.findById(id);
 		Users principal = (Users) session.getAttribute("principal");
-		
-		
+
 		if (boardsPS == null) {
 			return "errors/badPage";
 		}
@@ -43,12 +42,13 @@ public class BoardsController {
 		if (principal.getId() != boardsPS.getUsersId()) {
 			return "errors/badPage";
 		}
-		//2.변경
+		// 2.변경
 		boardsPS.updateBoards(updateDto);
-		//수행
+		// 수행
 		boardsDao.update(boardsPS);
-		return "redirect:/boards/"+id;
+		return "redirect:/boards/" + id;
 	}
+
 	@GetMapping("/boards/{id}/updateForm")
 	public String updateForm(@PathVariable Integer id, Model model) {
 		Boards boardsPS = boardsDao.findById(id);
@@ -66,7 +66,7 @@ public class BoardsController {
 		if (principal.getId() != boardsPS.getUsersId()) {
 			return "errors/badPage";
 		}
-		model.addAttribute("boards",boardsPS);
+		model.addAttribute("boards", boardsPS);
 		return "boards/updateForm";
 	}
 
@@ -111,32 +111,32 @@ public class BoardsController {
 		return "redirect:/";
 	}
 
+	// 1. ?page=0&keyword=스프링 -> 2개의 값을 받는다
 	@GetMapping({ "/", "/boards" }) // page는 QueryString으로 받자(PK값이 아니기때문에)
-	public String getBoardList(Model model, Integer page) {
-		if (page == null)
+	public String getBoardList(Model model, Integer page, String keyword) {
+		
+		if (page == null) {
 			page = 0;
-		int startNum = (page) * 5;
-		List<MainDto> boardsList = boardsDao.findAll(startNum);
-
-		PagingDto paging = boardsDao.paging(page);
-
-		final int blockCount = 5;
-
-		int currentBlock = page / blockCount;
-		int startPageNum = 1 + blockCount * currentBlock;
-		int lastPageNum = 5 + blockCount * currentBlock;
-
-		if (paging.getTotalPage() < lastPageNum) {
-			lastPageNum = paging.getTotalPage();
 		}
+		int startNum = (page) * 3;
+		
+		if (keyword == null || keyword.isEmpty()) {// 검색이 아닌
+			List<MainDto> boardsList = boardsDao.findAll(startNum);
+			PagingDto paging = boardsDao.paging(page, null);
+			paging.makeBlockInfo(keyword);
 
-		paging.setBlockCount(blockCount);
-		paging.setCurrentBlock(currentBlock);
-		paging.setStartPageNum(startPageNum);
-		paging.setLastPageNum(lastPageNum);
-		model.addAttribute("boardsList", boardsList);
+			model.addAttribute("boardsList", boardsList);
+			model.addAttribute("paging", paging);
 
-		model.addAttribute("paging", paging);
+		} else { // 검색이 된
+			List<MainDto> boardsList = boardsDao.findSearch(startNum, keyword);
+			PagingDto paging = boardsDao.paging(page, keyword);
+
+			paging.makeBlockInfo(keyword);
+
+			model.addAttribute("boardsList", boardsList);
+			model.addAttribute("paging", paging);
+		}
 
 		return "boards/main";
 	}
