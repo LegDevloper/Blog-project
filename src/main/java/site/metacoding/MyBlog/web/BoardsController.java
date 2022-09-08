@@ -75,6 +75,7 @@ public class BoardsController {
 		// 트랜잭션때문에 먼저 select를 한다(READ)
 		Users principal = (Users) session.getAttribute("principal");
 		Boards boardsPS = boardsDao.findById(id);
+		
 		// 비정상요청체크
 		if (boardsPS == null) {// If는 비정상 로직을 타게 해서 걸러내는 필터 역할을 하는게 좋다.
 			return "redirect:/loginForm";
@@ -87,7 +88,6 @@ public class BoardsController {
 		if (principal.getId() != boardsPS.getUsersId()) {
 			return "errors/badPage";
 		}
-
 		boardsDao.delete(id); // 핵심로직
 
 		return "redirect:/";
