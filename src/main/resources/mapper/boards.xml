@@ -62,9 +62,8 @@
 			FROM boards
 			<choose>
 			<when test="keyword!=null">
-			WHERE title LIKE '%'||#{keyword}||'%'</when>
-			<otherwise>
-			</otherwise>
+			WHERE title LIKE '%'||#{keyword}||'%'
+			</when>
 			</choose>
 		)
 	</select>

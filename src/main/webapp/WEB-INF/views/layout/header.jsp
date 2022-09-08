@@ -30,12 +30,17 @@
 							<li class="nav-item"><a class="nav-link" href="/joinForm">회원가입</a>
 							</li>
 							
+							
 						</c:when>
 						<c:otherwise>
 							<li class="nav-item"><a class="nav-link"
 								href="/boards/writeForm">글쓰기</a></li>
 							<li class="nav-item"><a class="nav-link" href="/logout">로그아웃</a></li>
-							<li class="nav-item"><a class="nav-link">${principal.username}님 반갑습니다</a></li>
+							<li class="nav-item"><a class="nav-link" href="/loginForm">회원정보수정</a>
+							<li class="nav-item"><a class="nav-link" href="/loginForm">회원탈퇴</a>
+							
+							</li>
+							</div>
 						</c:otherwise>
 					</c:choose>
 				</ul>

@@ -24,6 +24,7 @@
 		</thead>
 		<tbody>
 			<c:forEach var="boards" items="${boardsList}">
+
 				<tr>
 					<td>${boards.id}</td>
 					<td><a href="/boards/${boards.id}">${boards.title}</a></td>
@@ -34,11 +35,14 @@
 	</table>
 	<div class="d-flex justify-content-center">
 		<ul class="pagination">
-			<li class="page-item ${paging.first?'disabled':''}"><a class="page-link" href="?page=${paging.currentPage-1}&keyword=${paging.keyword}">Previous</a></li>
+			<li class="page-item ${paging.first?'disabled':''}"><a class="page-link"
+				href="?page=${paging.currentPage-1}&keyword=${paging.keyword}">Previous</a></li>
 			<c:forEach var="page" begin="${paging.startPageNum}" end="${paging.lastPageNum}" step="1">
-				<li class="page-item ${paging.currentPage==(page-1)?'active':''}"><a class="page-link" href="/?page=${page-1}&keyword=${paging.keyword}">${page}</a></li>
+				<li class="page-item ${paging.currentPage==(page-1)?'active':''}"><a class="page-link"
+					href="/?page=${page-1}&keyword=${paging.keyword}">${page}</a></li>
 			</c:forEach>
-			<li class="page-item ${paging.last?'disabled':''}"><a class="page-link" href="?page=${paging.currentPage+1 }&keyword=${paging.keyword}">Next</a></li>
+			<li class="page-item ${paging.last?'disabled':''}"><a class="page-link"
+				href="?page=${paging.currentPage+1 }&keyword=${paging.keyword}">Next</a></li>
 		</ul>
 	</div>
 </div>
