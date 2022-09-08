@@ -41,8 +41,6 @@
 			<li class="page-item ${paging.last?'disabled':''}"><a class="page-link" href="?page=${paging.currentPage+1 }&keyword=${paging.keyword}">Next</a></li>
 		</ul>
 	</div>
-	<h2>page : ${paging.currentPage }</h2>
-	<h2>keyword : ${paging.keyword }</h2>
 </div>
 
 

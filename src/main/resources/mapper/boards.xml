@@ -63,7 +63,6 @@
 			<choose>
 			<when test="keyword!=null">
 			WHERE title LIKE '%'||#{keyword}||'%'</when>
-			<when test="keyword!=' '"></when>
 			<otherwise>
 			</otherwise>
 			</choose>
