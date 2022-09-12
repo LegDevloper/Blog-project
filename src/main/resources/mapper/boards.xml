@@ -77,7 +77,7 @@
 	</update>
 
 	<delete id="delete">
-		DELETE FROM boards WHERE id=#{id}
+		DELETE FROM boards WHERE usersId=#{id}
 	</delete>
 
 </mapper>
